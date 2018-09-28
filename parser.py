@@ -52,7 +52,7 @@ class STATUS:
         idx_bombs = info.index("BOMBS")
         idx_wormholes = info.index("WORMHOLES")
         
-        print(idx_mine, idx_players, idx_bombs, idx_wormholes, len(info))
+        #print(idx_mine, idx_players, idx_bombs, idx_wormholes, len(info))
 
         # MINES
         self.num_mines = info[idx_mine+1]
