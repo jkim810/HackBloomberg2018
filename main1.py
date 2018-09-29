@@ -52,6 +52,7 @@ def update():
 	for j in tmp[1]:
 		delete_mine_wormhole(float(j["px"]), float(j["py"]), float(j["radius"])+140)
 
+cnt = 0
 s = STATUS()
 scanner = STATUS()
 c = CONFIGURATIONS()
@@ -103,7 +104,10 @@ while(True):
 			if (stored_mine[current] != id):
 				t = 0
 				update()
-				current = closest_mine(s.x, s.y)
+				if (cnt % 3 == 2):
+					current = random.choice(stored_mine.keys())
+				else:
+					current = closest_mine(s.x, s.y)
 				print('new mine', current)
 				BRAKE()
 				BRAKE()
@@ -120,12 +124,14 @@ while(True):
 					#current = (0, 0)
 				
 				while (stored_mine[current] != id):
-					if (t > 60 and t % 40 == 39):
-						BRAKE()
-						update()
 					if (t > 100):
 						print("overtime", t)
 						ACCELERATE(random.random()*2*math.pi, 1)
+						current = random.choice(stored_mine.keys())
+					if (t > 60 and t % 40 == 39):
+						BRAKE()
+						time.sleep(2)
+					if (t > 200):
 						break					
 					s.receive_info()
 					for m in s.mines:
@@ -142,6 +148,7 @@ while(True):
 					time.sleep(0.01)
 					t = t + 1
 				print('Captured mine')
+				cnt = cnt + 1
 
 		time.sleep(0.01)
 	except:
