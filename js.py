@@ -9,4 +9,5 @@ def log():
     driver.get('http://codebb.cloudapp.net/BaseInvaders.html')
     time.sleep(1)
     l = driver.execute_script("return state.mines")
+    driver.quit()
     return l

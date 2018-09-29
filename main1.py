@@ -83,6 +83,10 @@ def closest_mine(x, y):
 	return minimum_x, minimum_y
 #a, theta = calculate_acceleration(0.99, 5000, 5000, 10, -10, 7000, 7000)
 
+def update():
+	for d in js.log():
+		stored_mine[(float(d["px"]), float(d["py"]))] = d["owner"]
+
 s = STATUS()
 scanner = STATUS()
 c = CONFIGURATIONS()
@@ -92,8 +96,7 @@ current = (0, 0)
 prev_current = (0, 0)
 stored_mine = dict()
 
-for d in js.log():
-	stored_mine[(float(d["px"]), float(d["py"]))] = d["owner"]
+update()
 
 stored_mine[(0,0)] = id
 
@@ -119,7 +122,7 @@ while(True):
 	if stored_mine:
 		for m in s.mines:
 			stored_mine[(m.x,m.y)] = m.owner
-			
+
 		if stored_mine:
 			current = closest_mine(s.x, s.y)
 			if (stored_mine[current] == id):
@@ -132,9 +135,9 @@ while(True):
 			current = closest_mine(s.x, s.y)
 			print('new mine', current)
 			BRAKE()
-			time.sleep(2.5)
+			update()
 			BRAKE()
-			time.sleep(2.5)
+			time.sleep(3)
 
 			if s.wormholes:
 				w = s.wormholes[0]
