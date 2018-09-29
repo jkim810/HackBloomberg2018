@@ -17,10 +17,22 @@ def calculate_acceleration(friction, curr_x, curr_y, curr_dx, curr_dy, dest_x, d
 	# plot theta according to cosine and sine values
 
 	'''
-	ax = travel_x/friction - curr_dx
-	ay = travel_y/friction - curr_dy
+#	ax = travel_x/friction - curr_dx
+#	ay = travel_y/friction - curr_dy
 
 	# a = math.sqrt(pow(ax, 2) + pow(ay,2))
+
+# ADDED CODE
+	v_x = curr_dx
+	v_y = curr_dy
+	V = math.sqrt(v_x**2 + v_y**2)
+	D_x = dest_x - curr_x
+	D_y = dest_y - curr_y
+	D = math.sqrt(D_x**2 + D_y**2)
+	d_x = D_x / D
+	d_y = D_y / D
+	ax = V*d_x - V*v_x
+	ay = V*d_y - V*v_y
 
 	return 1, math.atan(ax/ay)
 
@@ -40,6 +52,8 @@ while(True):
 		print('spotted mine')
 		a, theta = calculate_acceleration(tmp.x, tmp.y, tmp.dx, tmp,dy, s.mine[0].x, s.mine[0].y)
 		ACCELERATE(1,theta)
+
+
 
 
 print(a, theta)
