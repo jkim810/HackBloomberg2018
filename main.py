@@ -1,5 +1,6 @@
 import math
 from command import *
+import time
 
 def calculate_acceleration(friction, curr_x, curr_y, curr_dx, curr_dy, dest_x, dest_y):
 	travel_x = dest_x - curr_x;
@@ -28,17 +29,17 @@ a, theta = calculate_acceleration(0.99, 5000, 5000, 10, -10, 7000, 7000)
 
 s = STATUS()
 
-id = 'taqueria'
-ps = 'diana'
-
-
-run(id, ps, 'ACCELERATE 1 1')
+ACCELERATE(1,1)
 
 while(True):
+
+	print('iterating')
 	tmp = s.receive_info();
-	if s.mines:
-		target = tmp.mines[0]
-		a, theta = calculate_acceleration(tmp.x, tmp.y, tmp.dx, tmp,dy, target.x, target.y)
-		run(id, ps, 'ACCELERATE ' + theta + ' 1')
+	time.sleep(0.1)
+	if int(s.num_mines) > 0:
+		print('spotted mine')
+		a, theta = calculate_acceleration(tmp.x, tmp.y, tmp.dx, tmp,dy, s.mine[0].x, s.mine[0].y)
+		ACCELERATE(1,theta)
+
 
 print(a, theta)
