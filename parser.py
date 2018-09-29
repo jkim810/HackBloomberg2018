@@ -96,7 +96,26 @@ class STATUS:
         info = clientpy3.run(id, passwd, "STATUS")
         #print(info)
         self.parse_info(info)
-
+        
+class Configurations:      
+    def __init__(self, to_parse):
+        self.to_parse = to_parse
+        self.run()
+        
+    def run(self):
+        parsed = self.to_parse.split(" ")    
+        self.width = float(parsed[2])
+        self.height = float(parsed[4])
+        self.capture_radius = float(parsed[6])
+        self.vision_radius = float(parsed[8])
+        self.friction = float(parsed[10])
+        self.brake_friction = float(parsed[12])
+        self.bomb_placer_radius = float(parsed[14])
+        self.bomb_effect_radius = float(parsed[16])
+        self.bomb_delay = float(parsed[18])
+        self.bomb_power = float(parsed[20])
+        self.scan_radius = float(parsed[22])
+        self.scan_delay = float(parsed[24].replace('\n',''))
 
 #test = STATUS()
 #test.receive_info()
