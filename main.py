@@ -1,6 +1,8 @@
 import math
 from command import *
 import time
+import random
+import timeit
 
 id = "a"
 passwd = "a"
@@ -35,18 +37,18 @@ def calculate_acceleration(friction, curr_x, curr_y, curr_dx, curr_dy, dest_x, d
 	d_y = D_y / D
 	ax = V*d_x/friction - V*v_x
 	ay = V*d_y/friction - V*v_y
-
-	'''
+	
 
 	if ay > 0 and ax > 0:
 		return 1, math.pi * 2 - math.atan(ay/ax)
 	elif ay > 0 and ax < 0:
 		return 1, math.atan(ay/ax) + math.pi
 	elif ay < 0 and ax > 0:
-		return 1, math.atan(ay/ax)
+		return 1, - math.atan(ay/ax)
 	else:
 		return 1, - math.atan(ay/ax) + math.pi
-
+	'''
+	return 1, math.atan2(ay,ax)
 
 
 def check_mine_existance(current, mines):
@@ -55,31 +57,63 @@ def check_mine_existance(current, mines):
 			return True
 	return False
 
-def closest_mine(mines, x, y):
-	minimum = 10000.0**2;
-	for m in mines.keys():
+def delete_mine_wormhole(x, y, r):
+	for m in stored_mine.keys():
+		if (m[0] < x + r and m[0] > x - r and m[1] < y + r and m[1] > y - r):
+			stored_mine.pop(m, None)
+
+def closest_mine(x, y):
+	i = 0
+	minimum = 10000.0**2
+	for m in stored_mine.keys():
+		if stored_mine[m] == id:
+			i = i + 1
+			continue
 		curr = (m[0]-x)**2 + (m[1]-y)**2
 		if curr < minimum:
 			minimum =  curr
 			minimum_x = m[0]
 			minimum_y = m[1]
+	if (i == len(stored_mine.keys())):
+		return 0, 0
 	return minimum_x, minimum_y
 #a, theta = calculate_acceleration(0.99, 5000, 5000, 10, -10, 7000, 7000)
 
 s = STATUS()
 c = CONFIGURATIONS()
+tt = 0
+
 current = (0, 0)
 prev_current = (0, 0)
 stored_mine = dict()
+
+stored_mine[(0,0)] = id
 
 print(c.width, c.height)
 
 ACCELERATE(3, 1)
 
+
 while(True):
+	print(current)
 	s.receive_info()
-	print("current {}, mines {}, stored {}".format(current, s.mines, stored_mine))
-	print("")
+	#print("current {}, mines {}, stored {}".format(current, s.mines, stored_mine))
+	#print("")
+	tt = tt + 1
+	#print(tt)
+	if (tt > 1000):
+		print("overtime", tt)
+		ACCELERATE(random.random()*2*math.pi, 1)
+		tt = 0
+
+	if s.wormholes:
+		w = s.wormholes[0]
+		a, theta = calculate_acceleration(c.friction, s.x, s.y, s.dx, s.dy, w.x, w.y)
+		ACCELERATE(theta + math.pi, a)
+		print(stored_mine)
+		delete_mine_wormhole(w.x, w.y, w.r)
+		print(stored_mine)
+		print("wormhole detected {}".format(s.wormholes))
 
 	if s.mines:
 		# update mine
@@ -87,32 +121,47 @@ while(True):
 			stored_mine[(m.x,m.y)] = m.owner
 		
 		if stored_mine:
-			current = closest_mine(stored_mine, s.x, s.y)
+			current = closest_mine(s.x, s.y)
 			if (stored_mine[current] == id):
 				current = (0, 0)
 				a, theta = calculate_acceleration(c.friction, s.x, s.y, s.dx, s.dy, current[0], current[1])
 
 		# if I own it
-		if (current in stored_mine and stored_mine[current] != id):
-			current = closest_mine(stored_mine, s.x, s.y)
+		if (stored_mine[current] != id):
+			t = 0
+			current = closest_mine(s.x, s.y)
 			print('new mine', current)
-			
-			BRAKE()
-			time.sleep(1)
 			BRAKE()
 			time.sleep(1)
 			BRAKE()
 			time.sleep(1)
 
+			if s.wormholes:
+				w = s.wormholes[0]
+				a, theta = calculate_acceleration(c.friction, s.x, s.y, s.dx, s.dy, w.x, w.y)
+				ACCELERATE(theta + math.pi, a)
+				delete_mine_wormhole(w.x, w.y, w.r)
+				print(stored_mine)
+				print("wormhole detected {}".format(s.wormholes))
+				print(stored_mine)
+				current = (0, 0)
+			
 			while (stored_mine[current] != id):
+				if (t > 300):
+					print("overtime", t)
+					ACCELERATE(random.random()*2*math.pi, 1)
+					break
 				s.receive_info()
 				for m in s.mines:
 					stored_mine[(m.x,m.y)] = m.owner
 				a, theta = calculate_acceleration(c.friction, s.x, s.y, s.dx, s.dy, current[0], current[1])
-				print('theta', theta)
-				ACCELERATE(theta, a)
+				print('theta', theta,  t)
+				ACCELERATE(theta, 1)
 				time.sleep(0.01)
-
+				t = t + 1
+			
+			ACCELERATE(random.random()*2*math.pi, 1)
+			print('Captured mine')
 
 	time.sleep(0.01)
 

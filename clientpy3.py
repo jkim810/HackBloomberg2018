@@ -3,6 +3,7 @@ import sys
 
 def run(user, password, * commands):
     ret = ""
+    #HOST, PORT = "codebb.cloudapp.net", 17429
     HOST, PORT = "127.0.0.1", 17429
     data = user + " " + password + "\n" + "\n".join(commands) + "\nCLOSE_CONNECTION\n"
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
