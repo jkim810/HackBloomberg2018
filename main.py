@@ -41,16 +41,13 @@ a, theta = calculate_acceleration(0.99, 5000, 5000, 10, -10, 7000, 7000)
 
 s = STATUS()
 
-ACCELERATE(1,1)
-
 while(True):
-
 	print('iterating')
-	tmp = s.receive_info();
+	s.receive_info()
 	time.sleep(0.1)
 	if int(s.num_mines) > 0:
 		print('spotted mine')
-		a, theta = calculate_acceleration(tmp.x, tmp.y, tmp.dx, tmp,dy, s.mine[0].x, s.mine[0].y)
+		a, theta = calculate_acceleration(s.x, s.y, s.dx, s,dy, s.mine[0].x, s.mine[0].y)
 		ACCELERATE(1,theta)
 
 

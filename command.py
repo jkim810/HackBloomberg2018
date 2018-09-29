@@ -84,7 +84,7 @@ class STATUS:
         # Wormhole
         self.num_wormholes = int(info[idx_wormholes+1])
         for i in range(idx_wormholes+2, len(info), 5):
-            self.wormholes.append(Bomb(
+            self.wormholes.append(Wormhole(
                 x = float(info[i]),
                 y = float(info[i+1]),
                 r = float(info[i+2]),
