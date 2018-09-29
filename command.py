@@ -106,13 +106,11 @@ class STATUS:
         self.wormholes = []
         self.parse_info(info)
         
-class CONFIGUREATIONS:      
-    def __init__(self, to_parse):
-        self.to_parse = to_parse
-        self.run()
-        
-    def run(self):
-        parsed = self.to_parse.split(" ")    
+class CONFIGURATIONS:      
+    def __init__(self):
+        to_parse = clientpy3.run(id, passwd, "CONFIGURATIONS")
+        parsed = to_parse.split(" ")    
+        print(parsed)
         self.width = float(parsed[2])
         self.height = float(parsed[4])
         self.capture_radius = float(parsed[6])
