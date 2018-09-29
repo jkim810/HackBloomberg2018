@@ -3,6 +3,7 @@ from command import *
 import time
 import random
 import timeit
+import js
 
 id = "taqueria"
 passwd = "diana"
@@ -91,10 +92,8 @@ current = (0, 0)
 prev_current = (0, 0)
 stored_mine = dict()
 
-# while(True):
-# 	if scanner.receive_scan(s.x-s.dy*c.scan_radius, s.y+s.dx*c.scan_radius):
-# 		#print(c.scan_radius)
-# 		print((s.x, s.y), (scanner.x, scanner.y))
+for d in js.log():
+	stored_mine[(float(d["px"]), float(d["py"]))] = d["owner"]
 
 stored_mine[(0,0)] = id
 
@@ -103,20 +102,9 @@ print(c.width, c.height)
 ACCELERATE(3, 1)
 
 while(True):
-	#print(current)
 	s.receive_info()
-	for p in s.players:
-		print(p.)
-	if scanner.receive_scan(s.x-s.dy*c.scan_radius, s.y+s.dx*c.scan_radius):
-		#print(c.scan_radius)
-		print((s.x, s.y), (scanner.x, scanner.y))
-		#print(scanner.mines)
-	if scanner.mines:
-		print("scanner {}".format(scanner.mines))
-	#print("current {}, mines {}, stored {}".format(current, s.mines, stored_mine))
-	#print("")
+	
 	tt = tt + 1
-	#print(tt)
 	if (tt > 1000):
 		print("overtime", tt)
 		ACCELERATE(random.random()*2*math.pi, 1)
@@ -126,18 +114,12 @@ while(True):
 		w = s.wormholes[0]
 		a, theta = calculate_acceleration(c.friction, s.x, s.y, s.dx, s.dy, w.x, w.y)
 		ACCELERATE(theta + math.pi, a)
-		#print(stored_mine)
 		delete_mine_wormhole(w.x, w.y, w.r)
-		#print(stored_mine)
-		#print("wormhole detected {}".format(s.wormholes))
-
-	if s.mines or scanner.mines:
-		# update mine
+	
+	if stored_mine:
 		for m in s.mines:
 			stored_mine[(m.x,m.y)] = m.owner
-		for m in scanner.mines:
-			stored_mine[(m.x,m.y)] = m.owner
-		
+			
 		if stored_mine:
 			current = closest_mine(s.x, s.y)
 			if (stored_mine[current] == id):

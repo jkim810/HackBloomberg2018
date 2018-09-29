@@ -78,7 +78,7 @@ class STATUS:
 
         # BOMBS
         self.num_bombs = int(info[idx_bombs+1])
-        print(info[idx_bombs+2:idx_wormholes])
+        #print(info[idx_bombs+2:idx_wormholes])
         for i in range(idx_bombs+2, idx_wormholes, 2):
             self.bombs.append(Bomb(
                 x = float(info[i]),
@@ -122,7 +122,7 @@ class CONFIGURATIONS:
     def __init__(self):
         to_parse = clientpy3.run(id, passwd, "CONFIGURATIONS")
         parsed = to_parse.split(" ")    
-        print(parsed)
+        #print(parsed)
         self.width = float(parsed[2])
         self.height = float(parsed[4])
         self.capture_radius = float(parsed[6])

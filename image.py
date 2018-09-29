@@ -2,6 +2,7 @@ from selenium import webdriver
 import numpy as np
 import time
 import cv2
+import os
 
 def screenshot():
     DRIVER = './chromedriver'
@@ -13,21 +14,23 @@ def screenshot():
     driver.quit()
 
 def find_corner():
-    im = cv2.imread("/home/dodo/Projects/HackBloomberg2018/image.jpg")
-    imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    _, bin = cv2.threshold(gray,120,255,1) # inverted threshold (light obj on dark bg)
-    bin = cv2.dilate(bin, None)  # fill some holes
-    bin = cv2.dilate(bin, None)
-    bin = cv2.erode(bin, None)   # dilate made our shape larger, revert that
-    bin = cv2.erode(bin, None)
-    bin, contours, hierarchy = cv2.findContours(bin, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+    path = "/home/dodo/Projects/HackBloomberg2018/image.png"
+    if os.path.isfile(path):
+        im = cv2.imread(path)
+        gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        _, bin = cv2.threshold(gray,220,255,1) # inverted threshold (light obj on dark bg)
+        bin = cv2.dilate(bin, None)  # fill some holes
+        bin = cv2.dilate(bin, None)
+        bin = cv2.erode(bin, None)   # dilate made our shape larger, revert that
+        bin = cv2.erode(bin, None)
+        bin, contours, hierarchy = cv2.findContours(bin, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
-    rc = cv2.minAreaRect(contours[0])
-    box = cv2.boxPoints(rc)
-    for p in box:
-        pt = (p[0],p[1])
-        cv2.circle(im,pt,5,(200,0,0),2)
-        print(p)
+        rc = cv2.minAreaRect(contours[0])
+        box = cv2.boxPoints(rc)
+        for p in box:
+            pt = (p[0],p[1])
+            cv2.circle(im,pt,5,(200,0,0),2)
+            print(p)
 
 def white_contour():
     gray = cv2.imread("image.png", 0)
