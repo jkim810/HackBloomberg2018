@@ -96,8 +96,13 @@ class STATUS:
         info = clientpy3.run(id, passwd, "STATUS")
         #print(info)
         self.parse_info(info)
+    
+    def receive_scan(self, x, y):
+        info = clientpy3.run(id, passwd, "SCAN {} {}".format(x, y))
+        #print(info)
+        self.parse_info(info)
         
-class Configurations:      
+class CONFIGUREATIONS:      
     def __init__(self, to_parse):
         self.to_parse = to_parse
         self.run()
@@ -117,5 +122,14 @@ class Configurations:
         self.scan_radius = float(parsed[22])
         self.scan_delay = float(parsed[24].replace('\n',''))
 
-#test = STATUS()
-#test.receive_info()
+def ACCELERATE(radians, accel):
+    clientpy3.run(id, passwd, "ACCELERATE {} {}".format(radians, accel))
+
+def BRAKE():
+    clientpy3.run(id, passwd, "BRAKE")
+
+def BOMB(x, y):
+    clientpy3.run(id, passwd, "BOMB {} {}".format(x, y))
+
+def BOMB(x, y, t):
+    clientpy3.run(id, passwd, "BOMB {} {} {}".format(x, y, t))
