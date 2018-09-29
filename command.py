@@ -1,13 +1,17 @@
 import clientpy3
 
-id = "taqueria"
-passwd = "diana"
+id = "a"
+passwd = "a"
 
 class Mine:
     def __init__(self, owner, x, y):
         self.owner = owner
         self.x = float(x)
         self.y = float(y)
+    def __str__(self):
+        return "{}, {}".format(self.x, self.y)
+    def __repr__(self):
+        return "{}, {}".format(self.x, self.y)
 
 class Player:
     def __init__(self, x, y, dx, dy):
@@ -95,6 +99,10 @@ class STATUS:
     def receive_info(self):
         info = clientpy3.run(id, passwd, "STATUS")
         #print(info)
+        self.mines = []
+        self.players = []
+        self.bombs = []
+        self.wormholes = []
         self.parse_info(info)
     
     def receive_scan(self, x, y):

@@ -2,10 +2,13 @@ import math
 from command import *
 import time
 
-def calculate_acceleration(friction, curr_x, curr_y, curr_dx, curr_dy, dest_x, dest_y):
-	travel_x = dest_x - curr_x;
-	travel_y = dest_y - curr_y;
+id = "a"
+passwd = "a"
 
+def calculate_acceleration(friction, curr_x, curr_y, curr_dx, curr_dy, dest_x, dest_y):
+	ax = dest_x - curr_x;
+	ay = dest_y - curr_y;
+	
 	'''
 	# calculate magnitude / distance
 	r = math.sqrt(pow(travel_x, 2) + pow(travel_y,2))
@@ -16,7 +19,6 @@ def calculate_acceleration(friction, curr_x, curr_y, curr_dx, curr_dy, dest_x, d
 
 	# plot theta according to cosine and sine values
 
-	'''
 #	ax = travel_x/friction - curr_dx
 #	ay = travel_y/friction - curr_dy
 
@@ -34,7 +36,18 @@ def calculate_acceleration(friction, curr_x, curr_y, curr_dx, curr_dy, dest_x, d
 	ax = V*d_x/friction - V*v_x
 	ay = V*d_y/friction - V*v_y
 
-	return 1, math.atan(ax/ay)
+	'''
+
+	if ay > 0 and ax > 0:
+		return 1, math.pi * 2 - math.atan(ay/ax)
+	elif ay > 0 and ax < 0:
+		return 1, math.atan(ay/ax) + math.pi
+	elif ay < 0 and ax > 0:
+		return 1, math.atan(ay/ax)
+	else:
+		return 1, - math.atan(ay/ax) + math.pi
+
+
 
 def check_mine_existance(current, mines):
 	for m in mines:
@@ -50,40 +63,57 @@ def closest_mine(mines, x, y):
 			minimum =  curr
 			minimum_x = m[0]
 			minimum_y = m[1]
-
 	return minimum_x, minimum_y
 #a, theta = calculate_acceleration(0.99, 5000, 5000, 10, -10, 7000, 7000)
 
 s = STATUS()
 c = CONFIGURATIONS()
 current = (0, 0)
-stored_mine = dict();
+prev_current = (0, 0)
+stored_mine = dict()
 
 print(c.width, c.height)
 
 ACCELERATE(3, 1)
 
 while(True):
-
-	print('iterating')
-	s.receive_info();
-	time.sleep(0.1)
+	s.receive_info()
+	print("current {}, mines {}, stored {}".format(current, s.mines, stored_mine))
+	print("")
 
 	if s.mines:
+		# update mine
 		for m in s.mines:
 			stored_mine[(m.x,m.y)] = m.owner
 		
-		# update when it is too far
-		if (current[0]-s.x > 300 and current[1]-s.y > 300):
+		if stored_mine:
 			current = closest_mine(stored_mine, s.x, s.y)
-			print('spotted mine', current)
-		
-		else:
+			if (stored_mine[current] == id):
+				current = (0, 0)
+				a, theta = calculate_acceleration(c.friction, s.x, s.y, s.dx, s.dy, current[0], current[1])
+
+		# if I own it
+		if (current in stored_mine and stored_mine[current] != id):
+			current = closest_mine(stored_mine, s.x, s.y)
+			print('new mine', current)
+			
+			BRAKE()
+			time.sleep(1)
+			BRAKE()
+			time.sleep(1)
 			BRAKE()
 			time.sleep(1)
 
-	if stored_mine:
-		a, theta = calculate_acceleration(c.friction, s.x, s.y, s.dx, s.dy, current[0], current[1])
-		ACCELERATE(theta, a) 
+			while (stored_mine[current] != id):
+				s.receive_info()
+				for m in s.mines:
+					stored_mine[(m.x,m.y)] = m.owner
+				a, theta = calculate_acceleration(c.friction, s.x, s.y, s.dx, s.dy, current[0], current[1])
+				print('theta', theta)
+				ACCELERATE(theta, a)
+				time.sleep(0.01)
+
+
+	time.sleep(0.01)
 
 print(a, theta)
