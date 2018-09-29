@@ -80,6 +80,7 @@ def closest_mine(x, y):
 #a, theta = calculate_acceleration(0.99, 5000, 5000, 10, -10, 7000, 7000)
 
 s = STATUS()
+scanner = STATUS()
 c = CONFIGURATIONS()
 tt = 0
 
@@ -92,7 +93,6 @@ stored_mine[(0,0)] = id
 print(c.width, c.height)
 
 ACCELERATE(3, 1)
-
 
 while(True):
 	print(current)
@@ -150,13 +150,17 @@ while(True):
 				if (t > 300):
 					print("overtime", t)
 					ACCELERATE(random.random()*2*math.pi, 1)
-					break
+					break					
 				s.receive_info()
 				for m in s.mines:
 					stored_mine[(m.x,m.y)] = m.owner
+					
 				a, theta = calculate_acceleration(c.friction, s.x, s.y, s.dx, s.dy, current[0], current[1])
 				print('theta', theta,  t)
-				ACCELERATE(theta, 1)
+				if (abs(s.x-current[0]) > c.width * 0.8 or (s.y-current[1]) >  c.height * 0.8):
+					ACCELERATE(theta+math.pi, 1)
+				else:
+					ACCELERATE(theta, 1)
 				time.sleep(0.01)
 				t = t + 1
 			

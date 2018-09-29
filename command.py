@@ -49,7 +49,6 @@ class STATUS:
         self.wormholes = []
     
     def parse_info(self, info):
-        info = info.split()
         self.x, self.y, self.dx, self.dy = map(float, info[1:5])
         idx_mine = int(info.index("MINES"))
         idx_players = int(info.index("PLAYERS"))
@@ -97,7 +96,7 @@ class STATUS:
             ))
 
     def receive_info(self):
-        info = clientpy3.run(id, passwd, "STATUS")
+        info = clientpy3.run(id, passwd, "STATUS").split()
         #print(info)
         self.mines = []
         self.players = []
@@ -106,7 +105,8 @@ class STATUS:
         self.parse_info(info)
     
     def receive_scan(self, x, y):
-        info = clientpy3.run(id, passwd, "SCAN {} {}".format(x, y))
+        info = clientpy3.run(id, passwd, "SCAN {} {}".format(x, y)).split()
+        info = [info[0]] + [x, y, 0, 0] + info[1:]
         #print(info)
         self.mines = []
         self.players = []
