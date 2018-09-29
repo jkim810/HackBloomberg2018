@@ -1,7 +1,7 @@
 import clientpy3
 
-id = "a"
-passwd = "a"
+id = "taqueria"
+passwd = "diana"
 
 class Mine:
     def __init__(self, owner, x, y):
@@ -78,12 +78,13 @@ class STATUS:
 
         # BOMBS
         self.num_bombs = int(info[idx_bombs+1])
+        print(info[idx_bombs+2:idx_wormholes])
         for i in range(idx_bombs+2, idx_wormholes, 2):
             self.bombs.append(Bomb(
                 x = float(info[i]),
                 y = float(info[i+1])
             ))
-
+        
         # Wormhole
         self.num_wormholes = int(info[idx_wormholes+1])
         for i in range(idx_wormholes+2, len(info), 5):
@@ -106,6 +107,8 @@ class STATUS:
     
     def receive_scan(self, x, y):
         info = clientpy3.run(id, passwd, "SCAN {} {}".format(x, y)).split()
+        if (info[0] == "ERROR"):
+            return False
         info = [info[0]] + [x, y, 0, 0] + info[1:]
         #print(info)
         self.mines = []
@@ -113,6 +116,7 @@ class STATUS:
         self.bombs = []
         self.wormholes = []
         self.parse_info(info)
+        return True
         
 class CONFIGURATIONS:      
     def __init__(self):
